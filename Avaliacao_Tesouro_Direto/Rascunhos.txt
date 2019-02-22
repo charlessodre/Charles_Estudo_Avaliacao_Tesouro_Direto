@@ -1,0 +1,14 @@
+Histórico Titulos
+
+https://sisweb.tesouro.gov.br/apex/f?p=2031:2:0::::
+
+Os títulos disponíveis nessa modalidade são:
+
+Tesouro Prefixado (LTN)
+Tesouro Prefixado com Juros Semestrais (NTN-F)
+Tesouro Selic (LFT)
+Tesouro IPCA+ com Juros Semestrais (NTN-B)
+Tesouro IPCA+ (NTN-B Principal)
+
+
+2019 - LFT LTN NTN-C NTN-B NTN-B Principal NTN-F 
