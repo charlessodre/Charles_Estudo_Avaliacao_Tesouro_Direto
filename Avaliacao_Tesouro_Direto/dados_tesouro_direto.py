@@ -68,9 +68,9 @@ def salvaDataFrameArquivo(dataframe, path_arquivo):
     """ Salva os dados do dataframe no arquivo. Se o arquivo não existir será criado. """
     # if file does not exist write header 
     if not os.path.isfile(path_arquivo):
-        dataframe.to_csv(path_arquivo, header='column_names', mode='a', sep=';', encoding='latin-1', decimal=',')
+        dataframe.to_csv(path_arquivo, header='column_names', mode='a', sep=';', encoding='latin-1', decimal=',', index= False)
     else: # else it exists so append without writing the header
-        dataframe.to_csv(path_arquivo, header=False, mode='a', sep=';', encoding='latin-1', decimal=',')
+        dataframe.to_csv(path_arquivo, header=False, mode='a', sep=';', encoding='latin-1', decimal=',', index= False)
     
     
     
@@ -283,9 +283,7 @@ def main():
 
                 # Envia a notificação pelo Telegram
                 enviaNotificacao(df_selecao_final)
-                
-                df_titulos.set_index('Título')
-                
+                               
                 salvaDataFrameArquivo(df_titulos, arquivo)
                 
                 print('Dados Obtidos com sucesso.', get_data_hora_atual())
