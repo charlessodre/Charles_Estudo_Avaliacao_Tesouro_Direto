@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import time
 import pandas as pd
 import locale
-import time
 import os
 import telegram_send
 
@@ -246,7 +245,17 @@ def enviaNotificacao(df_selecao_final):
         telegram_send.send(messages=[msg])
         #print(msg)
 
+
+
+def verificaHorarioExecucao():
+        
+    horaInicio = 8 
+    horaFim = 18
     
+    hora_atual = int(time.strftime("%H"))
+    
+    return hora_atual >= horaInicio and hora_atual <= horaFim
+       
 # Função principal
 def main():
     
@@ -262,44 +271,50 @@ def main():
     arquivo = os.path.join(diretorio , nome_arquivo)
 
     while True:
+        
+        if verificaHorarioExecucao():
 
-        try:
-            soap = getBeautifulSoup(url_fonte)
+            try:
+                soap = getBeautifulSoup(url_fonte)
 
-            if soap is not None:
-                #print("Ok")
-            
-                df_titulos = extraiInformacoesPagina(soap)
-                df_titulos = converteTipoDadosDataFrame(df_titulos)        
+                if soap is not None:     
+                    
+                    df_titulos = extraiInformacoesPagina(soap)
+                                         
+                    df_titulos = converteTipoDadosDataFrame(df_titulos)        
 
-                df_carteira = getTitulosCarteira()
-                df_merge = joinDataframesTituloCarteira(df_titulos, df_carteira)
+                    df_carteira = getTitulosCarteira()
+                        
+                    df_merge = joinDataframesTituloCarteira(df_titulos, df_carteira)
                 
-                df_final = getTitulosAnalise(tituloAcompanhamento, df_merge)
+                    df_final = getTitulosAnalise(tituloAcompanhamento, df_merge)
 
+                    #Seleciona somente as linhas atingiram os critérios definidos.
+                    df_selecao_final = df_final[ (df_final['Rendimento descontado IRPF %'] > taxaRendimento) & ( df_final['Preço Resgate menos Compra'] > valorDiferenca) ]
 
-                #Seleciona somente as linhas atingiram os critérios definidos.
-                df_selecao_final = df_final[ (df_final['Rendimento descontado IRPF %'] > taxaRendimento) & ( df_final['Preço Resgate menos Compra'] > valorDiferenca) ]
-
-                # Envia a notificação pelo Telegram
-                enviaNotificacao(df_selecao_final)
+                    #Envia a notificação pelo Telegram
+                    enviaNotificacao(df_selecao_final)
                                
-                salvaDataFrameArquivo(df_titulos, arquivo)
+                    salvaDataFrameArquivo(df_titulos, arquivo)
                 
-                print('Dados Obtidos com sucesso.', get_data_hora_atual())
+                    print('Dados Obtidos com sucesso.', get_data_hora_atual())
                 
-            else:
-                print('Falha o obter o soap.', get_data_hora_atual())
+                else:
+                    print('Falha o obter o soap.', get_data_hora_atual())
 
-            time.sleep(1800)
+                
+                time.sleep(3600)
 
-        except:
-            print('Erro ao obter as informações da página. Hora: ',  get_data_hora_atual())
-            time.sleep(60)
+            except:
+                    print('Erro ao obter as informações da página. Hora: ',  get_data_hora_atual())
+                    time.sleep(60)
 
-
+        else:
+            time.sleep(3600)
+        
 
 
 #Executa a função principal
 main()
+
 
